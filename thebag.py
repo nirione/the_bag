@@ -52,14 +52,6 @@ try:
 except Exception as exception:
     print(str(exception) + " reading " + prices_src)
     exit(1)
-    
-for j in json.loads(page):
-    if j['symbol'] == 'BTCUSDT':
-        usd_price = float(j['price'])
-        
-for j in json.loads(page):
-    if j['symbol'] == 'BTCUSD':
-        USD_price = float(j['price'])
 
 class Sale:     # Sale class to help manage transaction info
     info = ()
@@ -86,9 +78,9 @@ class Sale:     # Sale class to help manage transaction info
     @classmethod
     def from_string(cls, sale_str):
         symbol, amount, price = sale_str.split('/')
-        if (symbol + 'btc').upper() not in Sale.symbols:
+        if (symbol + 'USDT').upper() not in Sale.symbols:
             print('{0} is an incorrect symbol. '
-                  'Check the spelling and make sure the asset can be traded to BTC.'.format(symbol.upper()))
+                  'Check the spelling and make sure the asset can be traded to USDT.'.format(symbol.upper()))
         else:
             print('Successfully recorded a trade of {0} {1} coins.'.format(amount, symbol.upper()))
             return cls(symbol, float(amount), float(price))
@@ -108,6 +100,9 @@ class Asset:        # Asset class to help display and store coin info
         self.Ratio = self.Current_Value / self.Purchase_Value
         if self.__dict__ not in self.display_assets:
             self.display_assets.append(self.__dict__)
+            
+        if self.Amount == 0: # checks if all the sales amount to 0, eg if bought 2BTC and later sold 2BTC
+            self.display_assets.remove(self.__dict__)
 
     @classmethod
     def from_dict(cls, asset_dict):
@@ -117,7 +112,7 @@ class Asset:        # Asset class to help display and store coin info
     @classmethod
     def get_price(cls, symbol):
         for i in Asset.prices:
-            if (symbol + 'btc').upper() == i['symbol']:
+            if (symbol + 'USDT').upper() == i['symbol']:
                 return float(i['price'])
 
 
@@ -153,7 +148,10 @@ def update_assets():    # updates all assets based on the list of trades and lis
                 if i == d['symbol']:
                     total_amount += d['amount']
                     total_value += d['value']
-            asset_list.append({"Symbol": i, "Amount": total_amount, "Purchase Value": total_value})
+            if total_amount == 0:
+                pass
+            else:
+                asset_list.append({"Symbol": i, "Amount": total_amount, "Purchase Value": total_value})
 
         with open(assets_src, 'w') as f:
             json.dump(asset_list, f, indent=2)
@@ -188,25 +186,25 @@ def view_assets():    # displays the existing assets from assets.json without up
     if len(temp) > 0:
         for i in temp:
             Asset.from_dict(i)
+
         assets = Asset.display_assets
+
         sorted_assets = [j for j in sorted(assets, key=lambda v: v['Balance'])]
         top_asset = sorted_assets[len(sorted_assets)-1]
         print('    ________________________________')
-        print('    Your current assets: [BTC value]')
+        print('    Your current assets: [USDT value]')
         print()
         draw_table(sorted_assets)
         current_total = sum(i['Current_Value'] for i in Asset.display_assets)
         purchase_total = sum(i['Purchase_Value'] for i in Asset.display_assets)
         print()
-        print('Current value of all assets: ', round(current_total, 9), 'BTC')
-        print('Purchase value of all assets: ', round(purchase_total, 9), 'BTC')        
-        print('Current value of assets:', round(float(current_total*usd_price), 2), 'USD')
-        print('Current BTC to USD exchange:', usd_price, 'USD = 1 BTC')
+        print('Current value of all assets: ', round(current_total, 9), 'USDT')
+        print('Purchase value of all assets: ', round(purchase_total, 9), 'USDT')        
         print('Values as of', init_date)
         print()
         if top_asset['Balance'] > 0:
             print('Most profitable asset:', top_asset['Symbol'])
-            print('Providing:', '{0:.8f}'.format(top_asset['Balance']), 'BTC profit')
+            print('Providing:', '{0:.8f}'.format(top_asset['Balance']), 'USDT profit')
         else:
             print('dude you below !! you losin money !! you in the red... or the black... or whatever the bad one is.')
     else:
