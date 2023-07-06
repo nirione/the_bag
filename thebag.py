@@ -6,8 +6,6 @@ Displays all the data as a table of summed up transactions.
 Allows for display of all recorded trades.
 
 Designed to work mainly on Windows, however exceptions are made to make it work on Linux machines
-
-~~~Jakub Swiercz in 2021
 """
 
 import json
