@@ -245,11 +245,12 @@ def intro():
           'e - exit')
 
 def main():
-    os.system('title The_Bag')
     try:
+        os.system('title The_Bag')
         os.system('cls')
+        os.system("clear")
     except:
-        os.system('clear')
+        pass
 
     while True:
         intro()
@@ -258,15 +259,18 @@ def main():
         if choice == '1':
             try:
                 os.system('cls')
-            except:
                 os.system('clear')
+            except:
+                pass
+
             view_sales()
 
         elif choice == '2':
             try:
                 os.system('cls')
-            except:
                 os.system('clear')
+            except:
+                pass
             print()
             print('\'e\' or \'exit\' if you want to cancel the operation')
             str_input = input('symbol/amount/price: ')
@@ -279,8 +283,9 @@ def main():
         elif choice == '3':
             try:
                 os.system('cls')
-            except:
                 os.system('clear')
+            except:
+                pass
             update_assets()
             print()
             print('Assets updated!')
@@ -314,8 +319,9 @@ def main():
         else:
             try:
                 os.system('cls')
-            except:
                 os.system('clear')
+            except:
+                pass
             print()
             print('Incorrect input, use digits (1-4) only!')
 
